@@ -14,13 +14,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class BookJsonTests {
 
+    private final String expected = "io/github/bookmanagement/expected.json";
+    ClassPathResource expectedPath = new ClassPathResource(expected);
+
     @Autowired
     private JacksonTester<Book> json;
 
     @Test
-    void BookSerializationTest() throws IOException {
+    void shouldSerializeBookCorrectly() throws IOException {
         Book book  = new Book("Harry Potter", "J. K. Rowling");
+        var written = json.write(book);
 
-        assertThat(json.write(book)).isStrictlyEqualToJson(new ClassPathResource("io/github/bookmanagement/expected.json"));
+        // Checks if serialization is working properly
+        assertThat(written).isStrictlyEqualToJson(expectedPath);
+    }
+
+    @Test
+    void shouldDeserializeBookCorrectly() throws IOException {
+        var parsedBook = json.read(expectedPath).getObject();
+
+        assertThat(parsedBook.getTitle()).isEqualTo("Harry Potter");
+        assertThat(parsedBook.getAuthor()).isEqualTo("J. K. Rowling");
     }
 }
