@@ -31,7 +31,7 @@ public class Book {
                 '}';
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

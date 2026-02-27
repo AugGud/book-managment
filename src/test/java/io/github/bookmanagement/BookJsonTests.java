@@ -23,6 +23,8 @@ public class BookJsonTests {
     @Test
     void shouldSerializeBookCorrectly() throws IOException {
         Book book  = new Book("Harry Potter", "J. K. Rowling");
+
+        // Turn our example object into JSON
         var written = json.write(book);
 
         // Checks if serialization is working properly
