@@ -20,4 +20,9 @@ public class BookController {
         BookDto created = bookService.create(bookDto);
         return ResponseEntity.ok(created);
     }
+
+    @GetMapping("/{requestedId}")
+    public ResponseEntity<BookDto> getById(@PathVariable Long requestedId) {
+        return ResponseEntity.ok(bookService.findBookById(requestedId));
+    }
 }

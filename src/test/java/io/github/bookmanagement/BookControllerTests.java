@@ -1,5 +1,7 @@
 package io.github.bookmanagement;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import io.github.bookmanagement.dto.BookDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,21 @@ class BookControllerTests {
     @Autowired
     TestRestTemplate restTemplate;
 
-//    @Test
-//    void shouldReturnABookUsingAnId() {
-//        ResponseEntity<String> getResponse = restTemplate.getForEntity("/books/99");
-//    }
+    @Test
+    void shouldReturnABookUsingAnId() {
+        ResponseEntity<String> getResponse = restTemplate.getForEntity("/books/2", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        assertThat(id).isEqualTo(2);
+
+        String title = documentContext.read("$.title");
+        assertThat(title).isEqualTo("Harry Potter");
+
+        String author = documentContext.read("$.author");
+        assertThat(author).isEqualTo("J. K. Rowling");
+    }
 
     @Test
     void shouldCreateANewBook() {
