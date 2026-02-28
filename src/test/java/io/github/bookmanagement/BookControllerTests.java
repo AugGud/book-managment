@@ -3,6 +3,7 @@ package io.github.bookmanagement;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import io.github.bookmanagement.dto.BookDto;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,5 +65,25 @@ class BookControllerTests {
 
         String author = documentContext.read("$.author");
         assertThat(author).isEqualTo("J. K. Rowling");
+    }
+
+    @Test
+    void shouldReturnAPageOfBooks() {
+        ResponseEntity<String> getAllResponse = restTemplate.getForEntity("/books", String.class);
+        assertThat(getAllResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getAllResponse.getBody());
+
+        int bookCount = documentContext.read("$.content.length()");
+        assertThat(bookCount).isEqualTo(2);
+
+        JSONArray ids = documentContext.read("$.content[*].id");
+        assertThat(ids).containsExactlyInAnyOrder(2, 3);
+
+        JSONArray titles = documentContext.read("$.content[*].title");
+        assertThat(titles).containsExactlyInAnyOrder("Harry Potter", "The Hobbit");
+
+        JSONArray authors = documentContext.read("$.content[*].author");
+        assertThat(authors).containsExactlyInAnyOrder("J. K. Rowling", "J. R. R. Tolkien");
     }
 }

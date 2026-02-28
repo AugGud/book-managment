@@ -3,6 +3,8 @@ package io.github.bookmanagement.controller;
 import io.github.bookmanagement.dto.BookDto;
 import io.github.bookmanagement.service.BookService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,15 +17,15 @@ public class BookController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
+    private BookController(BookService bookService) {
         this.bookService = bookService;
     }
 
     // should return 201
     // and the location of the newly created book
     @PostMapping
-    public ResponseEntity<BookDto> create(@Valid @RequestBody BookDto bookDto, UriComponentsBuilder ucb) {
-        BookDto created = bookService.create(bookDto);
+    private ResponseEntity<BookDto> create(@Valid @RequestBody BookDto bookDto, UriComponentsBuilder ucb) {
+        BookDto created = bookService.saveBook(bookDto);
         URI locationOfNewBook = ucb
                 .path("/books/{id}")
                 .buildAndExpand(created.id())
@@ -32,7 +34,12 @@ public class BookController {
     }
 
     @GetMapping("/{requestedId}")
-    public ResponseEntity<BookDto> getById(@PathVariable Long requestedId) {
+    private ResponseEntity<BookDto> getById(@PathVariable Long requestedId) {
         return ResponseEntity.ok(bookService.findBookById(requestedId));
+    }
+
+    @GetMapping
+    private ResponseEntity<Page<BookDto>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(bookService.findAllBooks(pageable));
     }
 }
