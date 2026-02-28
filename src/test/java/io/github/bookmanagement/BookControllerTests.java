@@ -9,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+
+import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +38,31 @@ class BookControllerTests {
     }
 
     @Test
+    void shouldReturn404ForUnknownBook() {
+        ResponseEntity<String> getResponse = restTemplate.getForEntity("/books/999", String.class);
+
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DirtiesContext
     void shouldCreateANewBook() {
         BookDto newBookDto = new BookDto(null, "Harry Potter", "J. K. Rowling");
         ResponseEntity<Void> createResponse = restTemplate.postForEntity("/books", newBookDto, Void.class);
-        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
+        URI locationOfNewBook = createResponse.getHeaders().getLocation();
+        ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewBook, String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        assertThat(id).isEqualTo(1);
+
+        String title = documentContext.read("$.title");
+        assertThat(title).isEqualTo("Harry Potter");
+
+        String author = documentContext.read("$.author");
+        assertThat(author).isEqualTo("J. K. Rowling");
+    }
 }
