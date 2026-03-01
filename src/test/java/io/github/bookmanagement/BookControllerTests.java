@@ -122,4 +122,54 @@ class BookControllerTests {
         JSONArray titles = documentContext.read("$.content[*].title");
         assertThat(titles).containsExactly("The Hobbit", "Reverend Insanity", "Harry Potter");
     }
+
+    @Test
+    void shouldReturn400IfEmptyOrBlankTitle() {
+        // Empty or blank title
+        BookDto emptyTitleDto = new BookDto(null, "", "J. K. Rowling");
+        ResponseEntity<String> emptyTitlePostResponse = restTemplate.postForEntity("/books", emptyTitleDto, String.class);
+        assertThat(emptyTitlePostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400IfEmptyOrBlankAuthor() {
+        // Empty or blank author
+        BookDto emptyAuthorDto = new BookDto(null, "Harry Potter", "");
+        ResponseEntity<String> emptyAuthorPOstResponse = restTemplate.postForEntity("/books", emptyAuthorDto, String.class);
+        assertThat(emptyAuthorPOstResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400IfOversizedTitle() {
+        // Title over 200 characters
+        String oversizedTitle = "a".repeat(201);
+        BookDto oversizedTitleDto = new BookDto(null, oversizedTitle, "J. K. Rowling");
+        ResponseEntity<String> oversizedTitlePostResponse = restTemplate.postForEntity("/books", oversizedTitleDto, String.class);
+        assertThat(oversizedTitlePostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400IfOversizedAuthor() {
+        // Author over 200 characters
+        String oversizedAuthor = "a".repeat(201);
+        BookDto oversizedAuthorDto = new BookDto(null, oversizedAuthor, "J. K. Rowling");
+        ResponseEntity<String> oversizedAuthorPostResponse = restTemplate.postForEntity("/books", oversizedAuthorDto, String.class);
+        assertThat(oversizedAuthorPostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400IfUndersizedTitle() {
+        // Title under 2 characters
+        BookDto undersizedTitleDto = new BookDto(null, "A", "J. K. Rowling");
+        ResponseEntity<String> undersizedTitlePostResponse = restTemplate.postForEntity("/books", undersizedTitleDto, String.class);
+        assertThat(undersizedTitlePostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400IfUndersizedAuthor() {
+        // Author under 2 characters
+        BookDto undersizedAuthorDto = new BookDto(null, "A", "J. K. Rowling");
+        ResponseEntity<String> undersizedAuthorPostResponse = restTemplate.postForEntity("/books", undersizedAuthorDto, String.class);
+        assertThat(undersizedAuthorPostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

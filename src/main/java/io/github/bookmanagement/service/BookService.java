@@ -21,7 +21,10 @@ public class BookService {
     // repository.save()
     // Entity → DTO
     public BookDto saveBook(BookDto dto) {
-        Book book = new Book(dto.title(), dto.author());
+        Book book = new Book(
+                dto.title().trim(),
+                dto.author().trim()
+        );
 
         Book saved = bookRepository.save(book);
 

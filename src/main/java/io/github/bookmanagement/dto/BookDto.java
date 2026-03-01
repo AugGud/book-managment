@@ -6,11 +6,11 @@ import jakarta.validation.constraints.Size;
 public record BookDto(
         Long id,
 
-        @NotBlank(message = "Ttile can not be blank")
-        @Size(max = 200)
+        @NotBlank(message = "title can not be blank")
+        @Size(min = 2, max = 200)
         String title,
 
-        @NotBlank(message = "Author can not be blank")
-        @Size(max = 200)
+        @NotBlank(message = "author can not be blank")
+        @Size(min = 2, max = 200)
         String author
 ) {}
