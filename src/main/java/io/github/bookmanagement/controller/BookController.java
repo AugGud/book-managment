@@ -5,6 +5,8 @@ import io.github.bookmanagement.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -39,7 +41,14 @@ public class BookController {
     }
 
     @GetMapping
-    private ResponseEntity<Page<BookDto>> findAll(Pageable pageable) {
+    private ResponseEntity<Page<BookDto>> findAll(
+            @PageableDefault(
+                    size = 3,
+                    sort = "title",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable) {
+
         return ResponseEntity.ok(bookService.findAllBooks(pageable));
     }
 }

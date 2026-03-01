@@ -68,7 +68,7 @@ class BookControllerTests {
     }
 
     @Test
-    void shouldReturnAPageOfBooks() {
+    void shouldReturnAListOfBooks() {
         ResponseEntity<String> getAllResponse = restTemplate.getForEntity("/books", String.class);
         assertThat(getAllResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -85,5 +85,41 @@ class BookControllerTests {
 
         JSONArray authors = documentContext.read("$.content[*].author");
         assertThat(authors).containsExactlyInAnyOrder("J. K. Rowling", "J. R. R. Tolkien", "Gu Zhen Ren");
+    }
+
+    @Test
+    void shouldReturnAPageOfBooks() {
+        ResponseEntity<String> getAllResponse = restTemplate.getForEntity("/books?page=0&size=1", String.class);
+        assertThat(getAllResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getAllResponse.getBody());
+        int bookCount = documentContext.read("$.content.length()");
+        assertThat(bookCount).isEqualTo(1);
+    }
+
+    @Test
+    void shouldReturnASortedPageOfBooks() {
+        ResponseEntity<String> getAllResponse = restTemplate.getForEntity("/books?page=0&size=3&sort=title,asc", String.class);
+        assertThat(getAllResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getAllResponse.getBody());
+        int bookCount = documentContext.read("$.content.length()");
+        assertThat(bookCount).isEqualTo(3);
+
+        JSONArray titles = documentContext.read("$.content[*].title");
+        assertThat(titles).containsExactly("Harry Potter", "Reverend Insanity", "The Hobbit");
+    }
+
+    @Test
+    void shouldReturnADefaultSortedPageOfBooks() {
+        ResponseEntity<String> getAllResponse = restTemplate.getForEntity("/books", String.class);
+        assertThat(getAllResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(getAllResponse.getBody());
+        int bookCount = documentContext.read("$.content.length()");
+        assertThat(bookCount).isEqualTo(3);
+
+        JSONArray titles = documentContext.read("$.content[*].title");
+        assertThat(titles).containsExactly("The Hobbit", "Reverend Insanity", "Harry Potter");
     }
 }
