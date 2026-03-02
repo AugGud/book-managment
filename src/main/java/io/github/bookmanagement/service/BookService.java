@@ -13,7 +13,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    private BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
@@ -69,9 +69,9 @@ public class BookService {
         Book book = bookRepository.findById(requestedId)
                 .orElseThrow(() -> new BookNotFoundException(requestedId));
 
-        // set and save
-        book.setTitle(dto.title());
-        book.setAuthor(dto.author());
+        // trim, set and save
+        book.setTitle(dto.title().trim());
+        book.setAuthor(dto.author().trim());
 
         bookRepository.save(book);
 

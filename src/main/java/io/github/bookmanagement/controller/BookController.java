@@ -19,7 +19,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    private BookController(BookService bookService) {
+    public BookController(BookService bookService) {
         this.bookService = bookService;
     }
 
@@ -32,7 +32,10 @@ public class BookController {
                 .path("/books/{id}")
                 .buildAndExpand(created.id())
                 .toUri();
-        return ResponseEntity.created(locationOfNewBook).build();
+
+        return ResponseEntity
+                .created(locationOfNewBook)
+                .body(created);
     }
 
     @GetMapping("/{requestedId}")
@@ -64,6 +67,8 @@ public class BookController {
     @DeleteMapping("/{requestedId}")
     public ResponseEntity<Void> deleteBookById(@PathVariable Long requestedId) {
         bookService.deleteBookById(requestedId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -154,7 +154,7 @@ class BookControllerTests {
     void shouldReturn400IfOversizedAuthor() {
         // Author over 200 characters
         String oversizedAuthor = "a".repeat(201);
-        BookDto oversizedAuthorDto = new BookDto(null, oversizedAuthor, "J. K. Rowling");
+        BookDto oversizedAuthorDto = new BookDto(null, "Harry Potter", oversizedAuthor);
         ResponseEntity<String> oversizedAuthorPostResponse = restTemplate.postForEntity("/books", oversizedAuthorDto, String.class);
         assertThat(oversizedAuthorPostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -170,7 +170,7 @@ class BookControllerTests {
     @Test
     void shouldReturn400IfUndersizedAuthor() {
         // Author under 2 characters
-        BookDto undersizedAuthorDto = new BookDto(null, "A", "J. K. Rowling");
+        BookDto undersizedAuthorDto = new BookDto(null, "Harry Potter", "A");
         ResponseEntity<String> undersizedAuthorPostResponse = restTemplate.postForEntity("/books", undersizedAuthorDto, String.class);
         assertThat(undersizedAuthorPostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
