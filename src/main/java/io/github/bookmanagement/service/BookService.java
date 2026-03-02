@@ -55,4 +55,31 @@ public class BookService {
                         book.getAuthor()
                 ));
     }
+
+    public void deleteBookById(Long requestedId) {
+        Book book = bookRepository.findById(requestedId)
+                .orElseThrow(() -> new BookNotFoundException(requestedId));
+
+        bookRepository.delete(book);
+    }
+
+    public BookDto updateBookById(Long requestedId, BookDto dto) {
+
+        // get and return 404 if not found
+        Book book = bookRepository.findById(requestedId)
+                .orElseThrow(() -> new BookNotFoundException(requestedId));
+
+        // set and save
+        book.setTitle(dto.title());
+        book.setAuthor(dto.author());
+
+        bookRepository.save(book);
+
+        // convert to dto and return
+        return new BookDto(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor()
+        );
+    }
 }

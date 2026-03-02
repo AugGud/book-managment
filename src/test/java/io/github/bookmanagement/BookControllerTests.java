@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,7 +49,7 @@ class BookControllerTests {
 
     @Test
     @DirtiesContext
-    void shouldCreateANewBook() {
+    void shouldCreateBookANewBook() {
         BookDto newBookDto = new BookDto(null, "Harry Potter", "J. K. Rowling");
         ResponseEntity<Void> createResponse = restTemplate.postForEntity("/books", newBookDto, Void.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -171,5 +173,49 @@ class BookControllerTests {
         BookDto undersizedAuthorDto = new BookDto(null, "A", "J. K. Rowling");
         ResponseEntity<String> undersizedAuthorPostResponse = restTemplate.postForEntity("/books", undersizedAuthorDto, String.class);
         assertThat(undersizedAuthorPostResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DirtiesContext
+    void shouldDeleteBook() {
+        // Make sure it exists before deleting.
+        ResponseEntity<String> getResponse = restTemplate.getForEntity("/books/2", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // Delete it
+        ResponseEntity<Void> deleteResponse = restTemplate.exchange("/books/2", HttpMethod.DELETE, null,  Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingUnknownBook() {
+        ResponseEntity<Void> deleteResponse = restTemplate.exchange("/books/999", HttpMethod.DELETE, null, Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DirtiesContext
+    void shouldUpdateBook() {
+        BookDto dto = new BookDto(null, "Updated title", "Updated author");
+        ResponseEntity<String> updateResponse = restTemplate.exchange("/books/2", HttpMethod.PUT,  new HttpEntity<>(dto), String.class);
+
+        DocumentContext documentContext = JsonPath.parse(updateResponse.getBody());
+        Number id = documentContext.read("$.id");
+        assertThat(id).isEqualTo(2);
+
+        // Title was previously Harry Potter
+        String title = documentContext.read("$.title");
+        assertThat(title).isEqualTo("Updated title");
+
+        // Author was previously J. K. Rowling
+        String author = documentContext.read("$.author");
+        assertThat(author).isEqualTo("Updated author");
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingUnknownBook() {
+        BookDto dto = new BookDto(null, "Updated title", "Updated author");
+        ResponseEntity<String> updateResponse = restTemplate.exchange("/books/999", HttpMethod.PUT,  new HttpEntity<>(dto), String.class);
+        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

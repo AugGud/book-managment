@@ -26,7 +26,7 @@ public class BookController {
     // should return 201
     // and the location of the newly created book
     @PostMapping
-    private ResponseEntity<BookDto> create(@Valid @RequestBody BookDto bookDto, UriComponentsBuilder ucb) {
+    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto, UriComponentsBuilder ucb) {
         BookDto created = bookService.saveBook(bookDto);
         URI locationOfNewBook = ucb
                 .path("/books/{id}")
@@ -36,12 +36,12 @@ public class BookController {
     }
 
     @GetMapping("/{requestedId}")
-    private ResponseEntity<BookDto> getById(@PathVariable Long requestedId) {
+    public ResponseEntity<BookDto> findBookById(@PathVariable Long requestedId) {
         return ResponseEntity.ok(bookService.findBookById(requestedId));
     }
 
     @GetMapping
-    private ResponseEntity<Page<BookDto>> findAll(
+    public ResponseEntity<Page<BookDto>> getAllBooks (
             @PageableDefault(
                     size = 3,
                     sort = "title",
@@ -50,5 +50,20 @@ public class BookController {
             Pageable pageable) {
 
         return ResponseEntity.ok(bookService.findAllBooks(pageable));
+    }
+
+    @PutMapping("/{requestedId}")
+    public ResponseEntity<BookDto> updateBookById(
+            @PathVariable Long requestedId,
+            @Valid @RequestBody BookDto dto)
+    {
+        BookDto updatedBook= bookService.updateBookById(requestedId, dto);
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @DeleteMapping("/{requestedId}")
+    public ResponseEntity<Void> deleteBookById(@PathVariable Long requestedId) {
+        bookService.deleteBookById(requestedId);
+        return ResponseEntity.noContent().build();
     }
 }
