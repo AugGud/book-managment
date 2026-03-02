@@ -32,6 +32,48 @@ src/main/java/io/github/bookmanagement
 └── service        # Business logic
 ```
 
+## Requirements
+
+- JDK 21
+- Maven 3.9+ (or use the included Maven wrapper `./mvnw`)
+
+## Run locally
+
+1. Start the app:
+
+```bash
+./mvnw spring-boot:run
+```
+
+2. API base URL:
+
+```text
+http://localhost:8080
+```
+
+3. Optional H2 console (enabled):
+
+```text
+http://localhost:8080/h2-console
+```
+
+Use:
+- JDBC URL: `jdbc:h2:mem:testdb`
+- Username: `sa`
+- Password: *(empty)*
+
+## Database behavior
+
+- Uses in-memory H2, so data resets on restart.
+- Schema is created/dropped automatically (`create-drop`).
+- Seed data is loaded from `src/main/resources/data.sql`.
+
+Default seeded books:
+
+- `2` - Harry Potter / J. K. Rowling
+- `3` - The Hobbit / J. R. R. Tolkien
+- `4` - Reverend Insanity / Gu Zhen Ren
+
 ## API reference
 
 Base path: `/books`
@@ -89,3 +131,24 @@ Run all tests:
 ```bash
 ./mvnw test
 ```
+
+## Sources of learning
+
+This project was built while learning Spring Boot through the official
+Spring Academy REST API course:
+https://spring.academy/courses/building-a-rest-api-with-spring-boot
+
+AI tools were occasionally used for documentation suggestions
+and code-review style feedback.
+
+## Future improvements
+
+- Return field-level validation errors
+
+- Add OpenAPI documentation
+
+- Replace H2 with PostgreSQL
+
+- Add Docker support
+
+- Add Spring Security.
