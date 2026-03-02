@@ -39,12 +39,12 @@ public class BookController {
     }
 
     @GetMapping("/{requestedId}")
-    public ResponseEntity<BookDto> findBookById(@PathVariable Long requestedId) {
-        return ResponseEntity.ok(bookService.findBookById(requestedId));
+    public BookDto findBookById(@PathVariable Long requestedId) {
+        return bookService.findBookById(requestedId);
     }
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> getAllBooks (
+    public Page<BookDto> getAllBooks (
             @PageableDefault(
                     size = 3,
                     sort = "title",
@@ -52,16 +52,15 @@ public class BookController {
             )
             Pageable pageable) {
 
-        return ResponseEntity.ok(bookService.findAllBooks(pageable));
+        return bookService.findAllBooks(pageable);
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<BookDto> updateBookById(
+    public BookDto updateBookById(
             @PathVariable Long requestedId,
             @Valid @RequestBody BookDto dto)
     {
-        BookDto updatedBook= bookService.updateBookById(requestedId, dto);
-        return ResponseEntity.ok(updatedBook);
+        return bookService.updateBookById(requestedId, dto);
     }
 
     @DeleteMapping("/{requestedId}")

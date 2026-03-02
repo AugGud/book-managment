@@ -51,7 +51,7 @@ class BookControllerTests {
     @DirtiesContext
     void shouldCreateBookANewBook() {
         BookDto newBookDto = new BookDto(null, "Harry Potter", "J. K. Rowling");
-        ResponseEntity<Void> createResponse = restTemplate.postForEntity("/books", newBookDto, Void.class);
+        ResponseEntity<BookDto> createResponse = restTemplate.postForEntity("/books", newBookDto, BookDto.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         URI locationOfNewBook = createResponse.getHeaders().getLocation();
