@@ -24,6 +24,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Server crashed", 500));
+                .body(new ErrorResponse("Unexpected server error, please try again later.", 500));
     }
 }

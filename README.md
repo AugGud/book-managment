@@ -121,8 +121,8 @@ Validation failure returns `400 Bad Request`.
 
 Other common errors:
 
-- `404` -> `{"message":"Book not found","status":404}`
-- `500` -> `{"message":"Server crashed","status":500}`
+- `404` -> `{"message":"Book not found with id: 999","status":404}`
+- `500` -> `{"message":"Unexpected server error. Please try again later.","status":500}`
 
 ## Testing
 
